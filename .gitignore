@@ -1,0 +1,64 @@
+# macOS
+.DS_Store
+*.swp
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.jks
+*.keystore
+*.p12
+*.mobileprovision
+
+# Node / Vite
+node_modules/
+dist/
+.netlify/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Android / Gradle
+.gradle/
+build/
+*/build/
+*.apk
+*.aab
+*.idsig
+
+# Xcode / Swift
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.xcscmblueprint
+
+# Local runtime data
+Downloads/*
+!Downloads/.gitkeep
+Temp/*
+!Temp/.gitkeep
+Logs/*
+!Logs/.gitkeep
+
+# Packaged releases and generated archives
+*.app/
+*.dmg
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+
+# Project scratch / old release folders
+要删除的/
+**/要删除的/
+VideoExtractorMac/版本发布/
+
+# Bundled command line binaries; keep documentation.
+VideoExtractorMac/Tools/yt-dlp/*
+!VideoExtractorMac/Tools/yt-dlp/README.md
+VideoExtractorMac/Tools/ffmpeg/*
+!VideoExtractorMac/Tools/ffmpeg/README.md

@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: video-extractor-api
+    runtime: docker
+    plan: free
+    rootDir: VideoExtractorWeb/api
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    envVars:
+      - key: ACCESS_CODE
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false
+      - key: JOB_TIMEOUT_SECONDS
+        value: "1800"
+      - key: JOB_TTL_SECONDS
+        value: "3600"

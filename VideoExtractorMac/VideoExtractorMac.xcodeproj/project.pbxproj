@@ -1,0 +1,681 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		000000000000000000000101 /* VideoExtractorMacApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000201 /* VideoExtractorMacApp.swift */; };
+		000000000000000000000102 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000202 /* MainView.swift */; };
+		000000000000000000000103 /* URLInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000203 /* URLInputView.swift */; };
+		000000000000000000000104 /* FormatSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000204 /* FormatSelectionView.swift */; };
+		000000000000000000000105 /* DownloadQueueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000205 /* DownloadQueueView.swift */; };
+		000000000000000000000106 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000206 /* SettingsView.swift */; };
+		000000000000000000000107 /* LogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000207 /* LogView.swift */; };
+		000000000000000000000108 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000208 /* HistoryView.swift */; };
+		000000000000000000000109 /* MediaFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000209 /* MediaFormat.swift */; };
+		000000000000000000000110 /* DownloadTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000210 /* DownloadTask.swift */; };
+		000000000000000000000111 /* PlatformType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000211 /* PlatformType.swift */; };
+		000000000000000000000112 /* DownloadMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000212 /* DownloadMode.swift */; };
+		000000000000000000000113 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000213 /* AppSettings.swift */; };
+		000000000000000000000114 /* YTDLPService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000214 /* YTDLPService.swift */; };
+		000000000000000000000115 /* FFmpegService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000215 /* FFmpegService.swift */; };
+		000000000000000000000116 /* CommandRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000216 /* CommandRunner.swift */; };
+		000000000000000000000117 /* FileManagerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000217 /* FileManagerService.swift */; };
+		000000000000000000000118 /* URLDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000218 /* URLDetector.swift */; };
+		000000000000000000000119 /* HistoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000219 /* HistoryService.swift */; };
+		000000000000000000000120 /* AppSettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000220 /* AppSettingsStore.swift */; };
+		000000000000000000000121 /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000221 /* MainViewModel.swift */; };
+		000000000000000000000122 /* FormatSelectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000222 /* FormatSelectionViewModel.swift */; };
+		000000000000000000000123 /* DownloadQueueViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000223 /* DownloadQueueViewModel.swift */; };
+		000000000000000000000124 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000224 /* SettingsViewModel.swift */; };
+		000000000000000000000125 /* LogViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000225 /* LogViewModel.swift */; };
+		000000000000000000000126 /* SafePath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000226 /* SafePath.swift */; };
+		000000000000000000000127 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000227 /* Logger.swift */; };
+		000000000000000000000128 /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000228 /* AppError.swift */; };
+		000000000000000000000181 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000281 /* Assets.xcassets */; };
+		000000000000000000000182 /* Tools in Resources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000282 /* Tools */; };
+		111111111111111111110101 /* VideoExtractoriOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111111111111111111110201 /* VideoExtractoriOSApp.swift */; };
+		111111111111111111110102 /* MobileMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111111111111111111110202 /* MobileMainView.swift */; };
+		111111111111111111110103 /* MobileMainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111111111111111111110203 /* MobileMainViewModel.swift */; };
+		111111111111111111110104 /* DownloadServerClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111111111111111111110204 /* DownloadServerClient.swift */; };
+		111111111111111111110105 /* RemoteDownloadKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111111111111111111110205 /* RemoteDownloadKind.swift */; };
+		111111111111111111110106 /* MediaFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000209 /* MediaFormat.swift */; };
+		111111111111111111110107 /* DownloadTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000210 /* DownloadTask.swift */; };
+		111111111111111111110108 /* PlatformType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000211 /* PlatformType.swift */; };
+		111111111111111111110109 /* DownloadMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000212 /* DownloadMode.swift */; };
+		111111111111111111110110 /* URLDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000218 /* URLDetector.swift */; };
+		111111111111111111110111 /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000228 /* AppError.swift */; };
+		111111111111111111110181 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 111111111111111111110281 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		000000000000000000000201 /* VideoExtractorMacApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoExtractorMacApp.swift; sourceTree = "<group>"; };
+		000000000000000000000202 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		000000000000000000000203 /* URLInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLInputView.swift; sourceTree = "<group>"; };
+		000000000000000000000204 /* FormatSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormatSelectionView.swift; sourceTree = "<group>"; };
+		000000000000000000000205 /* DownloadQueueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadQueueView.swift; sourceTree = "<group>"; };
+		000000000000000000000206 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		000000000000000000000207 /* LogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogView.swift; sourceTree = "<group>"; };
+		000000000000000000000208 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		000000000000000000000209 /* MediaFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaFormat.swift; sourceTree = "<group>"; };
+		000000000000000000000210 /* DownloadTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadTask.swift; sourceTree = "<group>"; };
+		000000000000000000000211 /* PlatformType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlatformType.swift; sourceTree = "<group>"; };
+		000000000000000000000212 /* DownloadMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadMode.swift; sourceTree = "<group>"; };
+		000000000000000000000213 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		000000000000000000000214 /* YTDLPService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YTDLPService.swift; sourceTree = "<group>"; };
+		000000000000000000000215 /* FFmpegService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FFmpegService.swift; sourceTree = "<group>"; };
+		000000000000000000000216 /* CommandRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandRunner.swift; sourceTree = "<group>"; };
+		000000000000000000000217 /* FileManagerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileManagerService.swift; sourceTree = "<group>"; };
+		000000000000000000000218 /* URLDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLDetector.swift; sourceTree = "<group>"; };
+		000000000000000000000219 /* HistoryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryService.swift; sourceTree = "<group>"; };
+		000000000000000000000220 /* AppSettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsStore.swift; sourceTree = "<group>"; };
+		000000000000000000000221 /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
+		000000000000000000000222 /* FormatSelectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormatSelectionViewModel.swift; sourceTree = "<group>"; };
+		000000000000000000000223 /* DownloadQueueViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadQueueViewModel.swift; sourceTree = "<group>"; };
+		000000000000000000000224 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
+		000000000000000000000225 /* LogViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogViewModel.swift; sourceTree = "<group>"; };
+		000000000000000000000226 /* SafePath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafePath.swift; sourceTree = "<group>"; };
+		000000000000000000000227 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		000000000000000000000228 /* AppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppError.swift; sourceTree = "<group>"; };
+		000000000000000000000281 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		000000000000000000000282 /* Tools */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Tools; sourceTree = "<group>"; };
+		000000000000000000000901 /* VideoExtractorMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VideoExtractorMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		111111111111111111110201 /* VideoExtractoriOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoExtractoriOSApp.swift; sourceTree = "<group>"; };
+		111111111111111111110202 /* MobileMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileMainView.swift; sourceTree = "<group>"; };
+		111111111111111111110203 /* MobileMainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileMainViewModel.swift; sourceTree = "<group>"; };
+		111111111111111111110204 /* DownloadServerClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadServerClient.swift; sourceTree = "<group>"; };
+		111111111111111111110205 /* RemoteDownloadKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteDownloadKind.swift; sourceTree = "<group>"; };
+		111111111111111111110251 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		111111111111111111110281 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		111111111111111111110901 /* VideoExtractoriOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VideoExtractoriOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		000000000000000000000401 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		111111111111111111110401 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		000000000000000000000301 = {
+			isa = PBXGroup;
+			children = (
+				000000000000000000000302 /* VideoExtractorMac */,
+				111111111111111111110302 /* VideoExtractoriOS */,
+				000000000000000000000282 /* Tools */,
+				000000000000000000000399 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		000000000000000000000302 /* VideoExtractorMac */ = {
+			isa = PBXGroup;
+			children = (
+				000000000000000000000303 /* App */,
+				000000000000000000000304 /* Views */,
+				000000000000000000000305 /* Models */,
+				000000000000000000000306 /* Services */,
+				000000000000000000000307 /* ViewModels */,
+				000000000000000000000308 /* Resources */,
+				000000000000000000000309 /* Utilities */,
+			);
+			path = VideoExtractorMac;
+			sourceTree = "<group>";
+		};
+		000000000000000000000303 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				000000000000000000000201 /* VideoExtractorMacApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		000000000000000000000304 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				000000000000000000000202 /* MainView.swift */,
+				000000000000000000000203 /* URLInputView.swift */,
+				000000000000000000000204 /* FormatSelectionView.swift */,
+				000000000000000000000205 /* DownloadQueueView.swift */,
+				000000000000000000000206 /* SettingsView.swift */,
+				000000000000000000000207 /* LogView.swift */,
+				000000000000000000000208 /* HistoryView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		000000000000000000000305 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				000000000000000000000209 /* MediaFormat.swift */,
+				000000000000000000000210 /* DownloadTask.swift */,
+				000000000000000000000211 /* PlatformType.swift */,
+				000000000000000000000212 /* DownloadMode.swift */,
+				000000000000000000000213 /* AppSettings.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		000000000000000000000306 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				000000000000000000000214 /* YTDLPService.swift */,
+				000000000000000000000215 /* FFmpegService.swift */,
+				000000000000000000000216 /* CommandRunner.swift */,
+				000000000000000000000217 /* FileManagerService.swift */,
+				000000000000000000000218 /* URLDetector.swift */,
+				000000000000000000000219 /* HistoryService.swift */,
+				000000000000000000000220 /* AppSettingsStore.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		000000000000000000000307 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				000000000000000000000221 /* MainViewModel.swift */,
+				000000000000000000000222 /* FormatSelectionViewModel.swift */,
+				000000000000000000000223 /* DownloadQueueViewModel.swift */,
+				000000000000000000000224 /* SettingsViewModel.swift */,
+				000000000000000000000225 /* LogViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		000000000000000000000308 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				000000000000000000000281 /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		000000000000000000000309 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				000000000000000000000226 /* SafePath.swift */,
+				000000000000000000000227 /* Logger.swift */,
+				000000000000000000000228 /* AppError.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		000000000000000000000399 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				000000000000000000000901 /* VideoExtractorMac.app */,
+				111111111111111111110901 /* VideoExtractoriOS.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		111111111111111111110302 /* VideoExtractoriOS */ = {
+			isa = PBXGroup;
+			children = (
+				111111111111111111110303 /* App */,
+				111111111111111111110304 /* Views */,
+				111111111111111111110305 /* Models */,
+				111111111111111111110306 /* Services */,
+				111111111111111111110307 /* ViewModels */,
+				111111111111111111110308 /* Resources */,
+			);
+			path = VideoExtractoriOS;
+			sourceTree = "<group>";
+		};
+		111111111111111111110303 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				111111111111111111110201 /* VideoExtractoriOSApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		111111111111111111110304 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				111111111111111111110202 /* MobileMainView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		111111111111111111110305 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				111111111111111111110205 /* RemoteDownloadKind.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		111111111111111111110306 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				111111111111111111110204 /* DownloadServerClient.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		111111111111111111110307 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				111111111111111111110203 /* MobileMainViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		111111111111111111110308 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				111111111111111111110251 /* Info.plist */,
+				111111111111111111110281 /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		000000000000000000000501 /* VideoExtractorMac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 000000000000000000000701 /* Build configuration list for PBXNativeTarget "VideoExtractorMac" */;
+			buildPhases = (
+				000000000000000000000403 /* Sources */,
+				000000000000000000000402 /* Resources */,
+				000000000000000000000401 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = VideoExtractorMac;
+			productName = VideoExtractorMac;
+			productReference = 000000000000000000000901 /* VideoExtractorMac.app */;
+			productType = "com.apple.product-type.application";
+		};
+		111111111111111111110501 /* VideoExtractoriOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 111111111111111111110701 /* Build configuration list for PBXNativeTarget "VideoExtractoriOS" */;
+			buildPhases = (
+				111111111111111111110403 /* Sources */,
+				111111111111111111110402 /* Resources */,
+				111111111111111111110401 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = VideoExtractoriOS;
+			productName = VideoExtractoriOS;
+			productReference = 111111111111111111110901 /* VideoExtractoriOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		000000000000000000000601 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					000000000000000000000501 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					111111111111111111110501 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = 000000000000000000000702 /* Build configuration list for PBXProject "VideoExtractorMac" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				zh-Hans,
+			);
+			mainGroup = 000000000000000000000301;
+			productRefGroup = 000000000000000000000399 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				000000000000000000000501 /* VideoExtractorMac */,
+				111111111111111111110501 /* VideoExtractoriOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		000000000000000000000402 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				000000000000000000000181 /* Assets.xcassets in Resources */,
+				000000000000000000000182 /* Tools in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		111111111111111111110402 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				111111111111111111110181 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		000000000000000000000403 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				000000000000000000000101 /* VideoExtractorMacApp.swift in Sources */,
+				000000000000000000000102 /* MainView.swift in Sources */,
+				000000000000000000000103 /* URLInputView.swift in Sources */,
+				000000000000000000000104 /* FormatSelectionView.swift in Sources */,
+				000000000000000000000105 /* DownloadQueueView.swift in Sources */,
+				000000000000000000000106 /* SettingsView.swift in Sources */,
+				000000000000000000000107 /* LogView.swift in Sources */,
+				000000000000000000000108 /* HistoryView.swift in Sources */,
+				000000000000000000000109 /* MediaFormat.swift in Sources */,
+				000000000000000000000110 /* DownloadTask.swift in Sources */,
+				000000000000000000000111 /* PlatformType.swift in Sources */,
+				000000000000000000000112 /* DownloadMode.swift in Sources */,
+				000000000000000000000113 /* AppSettings.swift in Sources */,
+				000000000000000000000114 /* YTDLPService.swift in Sources */,
+				000000000000000000000115 /* FFmpegService.swift in Sources */,
+				000000000000000000000116 /* CommandRunner.swift in Sources */,
+				000000000000000000000117 /* FileManagerService.swift in Sources */,
+				000000000000000000000118 /* URLDetector.swift in Sources */,
+				000000000000000000000119 /* HistoryService.swift in Sources */,
+				000000000000000000000120 /* AppSettingsStore.swift in Sources */,
+				000000000000000000000121 /* MainViewModel.swift in Sources */,
+				000000000000000000000122 /* FormatSelectionViewModel.swift in Sources */,
+				000000000000000000000123 /* DownloadQueueViewModel.swift in Sources */,
+				000000000000000000000124 /* SettingsViewModel.swift in Sources */,
+				000000000000000000000125 /* LogViewModel.swift in Sources */,
+				000000000000000000000126 /* SafePath.swift in Sources */,
+				000000000000000000000127 /* Logger.swift in Sources */,
+				000000000000000000000128 /* AppError.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		111111111111111111110403 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				111111111111111111110101 /* VideoExtractoriOSApp.swift in Sources */,
+				111111111111111111110102 /* MobileMainView.swift in Sources */,
+				111111111111111111110103 /* MobileMainViewModel.swift in Sources */,
+				111111111111111111110104 /* DownloadServerClient.swift in Sources */,
+				111111111111111111110105 /* RemoteDownloadKind.swift in Sources */,
+				111111111111111111110106 /* MediaFormat.swift in Sources */,
+				111111111111111111110107 /* DownloadTask.swift in Sources */,
+				111111111111111111110108 /* PlatformType.swift in Sources */,
+				111111111111111111110109 /* DownloadMode.swift in Sources */,
+				111111111111111111110110 /* URLDetector.swift in Sources */,
+				111111111111111111110111 /* AppError.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		000000000000000000000801 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		000000000000000000000802 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		000000000000000000000803 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "视频提取器";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.local.VideoExtractorMac;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		000000000000000000000804 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "视频提取器";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.local.VideoExtractorMac;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		111111111111111111110803 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = VideoExtractoriOS/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.local.VideoExtractoriOS;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		111111111111111111110804 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = VideoExtractoriOS/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.local.VideoExtractoriOS;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		000000000000000000000701 /* Build configuration list for PBXNativeTarget "VideoExtractorMac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				000000000000000000000803 /* Debug */,
+				000000000000000000000804 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		111111111111111111110701 /* Build configuration list for PBXNativeTarget "VideoExtractoriOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				111111111111111111110803 /* Debug */,
+				111111111111111111110804 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		000000000000000000000702 /* Build configuration list for PBXProject "VideoExtractorMac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				000000000000000000000801 /* Debug */,
+				000000000000000000000802 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 000000000000000000000601 /* Project object */;
+}

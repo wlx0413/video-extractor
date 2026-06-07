@@ -1,0 +1,10 @@
+.DS_Store
+node_modules/
+dist/
+.env
+.netlify/
+
+api/.env
+api/.venv/
+api/app/__pycache__/
+api/**/*.pyc
