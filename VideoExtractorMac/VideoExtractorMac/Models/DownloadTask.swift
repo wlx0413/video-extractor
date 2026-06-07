@@ -61,6 +61,8 @@ struct DownloadTask: Identifiable, Codable, Hashable {
     var outputPath: String?
     var selectedMode: DownloadMode
     var selectedFormatID: String?
+    var selectedSubtitleTrackIDs: [String]
+    var selectedSubtitleOutputFormats: Set<SubtitleOutputFormat>
     var errorMessage: String?
     var createdAt: Date
     var updatedAt: Date
@@ -76,6 +78,8 @@ struct DownloadTask: Identifiable, Codable, Hashable {
         outputPath: String? = nil,
         selectedMode: DownloadMode = .best,
         selectedFormatID: String? = nil,
+        selectedSubtitleTrackIDs: [String] = [],
+        selectedSubtitleOutputFormats: Set<SubtitleOutputFormat> = Set(SubtitleOutputFormat.allCases),
         errorMessage: String? = nil,
         createdAt: Date = Date(),
         updatedAt: Date = Date(),
@@ -90,6 +94,8 @@ struct DownloadTask: Identifiable, Codable, Hashable {
         self.outputPath = outputPath
         self.selectedMode = selectedMode
         self.selectedFormatID = selectedFormatID
+        self.selectedSubtitleTrackIDs = selectedSubtitleTrackIDs
+        self.selectedSubtitleOutputFormats = selectedSubtitleOutputFormats
         self.errorMessage = errorMessage
         self.createdAt = createdAt
         self.updatedAt = updatedAt
