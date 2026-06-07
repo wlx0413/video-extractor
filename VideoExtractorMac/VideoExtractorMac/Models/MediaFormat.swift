@@ -36,6 +36,8 @@ struct SubtitleTrack: Identifiable, Codable, Hashable {
     var languageName: String
     var source: SubtitleSource
     var isOriginalLanguage: Bool
+    var downloadURL: URL?
+    var extensionName: String?
 
     var id: String {
         "\(source.rawValue):\(languageCode)"

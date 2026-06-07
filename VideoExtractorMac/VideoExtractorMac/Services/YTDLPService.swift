@@ -460,7 +460,9 @@ final class YTDLPService {
                     languageCode: cleanedCode,
                     languageName: subtitleLanguageName(for: cleanedCode, formats: formats),
                     source: source,
-                    isOriginalLanguage: isSameLanguage(cleanedCode, originalLanguageCode)
+                    isOriginalLanguage: isSameLanguage(cleanedCode, originalLanguageCode),
+                    downloadURL: preferredSubtitleURL(from: formats),
+                    extensionName: preferredSubtitleExtension(from: formats)
                 )
 
                 guard seen.contains(track.id) == false else {
@@ -501,6 +503,30 @@ final class YTDLPService {
 
         let languagePart = normalizedCode.split(separator: "-").first.map(String.init) ?? normalizedCode
         return Locale.current.localizedString(forLanguageCode: languagePart) ?? languageCode
+    }
+
+    private static func preferredSubtitleURL(from formats: [SubtitleFormatDTO]) -> URL? {
+        preferredSubtitleFormat(from: formats)
+            .flatMap { dto in
+                dto.url.flatMap(URL.init(string:))
+            }
+    }
+
+    private static func preferredSubtitleExtension(from formats: [SubtitleFormatDTO]) -> String? {
+        preferredSubtitleFormat(from: formats)?
+            .extensionName?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased()
+    }
+
+    private static func preferredSubtitleFormat(from formats: [SubtitleFormatDTO]) -> SubtitleFormatDTO? {
+        let readableExtensions = ["srt", "vtt"]
+        for ext in readableExtensions {
+            if let format = formats.first(where: { $0.extensionName?.lowercased() == ext && $0.url?.isEmpty == false }) {
+                return format
+            }
+        }
+        return nil
     }
 
     private static func isSameLanguage(_ languageCode: String, _ originalLanguageCode: String?) -> Bool {
@@ -569,6 +595,15 @@ final class YTDLPService {
         taskID: UUID
     ) async throws -> URL {
         let outputBaseName = "subtitle_\(index + 1)_\(track.source.rawValue)_\(SafePath.sanitizedFileName(track.languageCode, fallbackPrefix: "sub"))"
+        if let directURL = track.downloadURL {
+            return try await downloadSubtitleFileDirectly(
+                directURL,
+                track: track,
+                outputBaseName: outputBaseName,
+                temporaryDirectory: temporaryDirectory
+            )
+        }
+
         var arguments = [
             "--no-playlist",
             "--skip-download",
@@ -605,7 +640,7 @@ final class YTDLPService {
                 throw AppError.cancelled
             }
             throw AppError.fromCommandFailure(
-                stderr: result.stderr + "\n" + result.stdout,
+                stderr: result.stderr.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? result.stdout : result.stderr,
                 fallback: "\(track.displayName) 下载失败。"
             )
         }
@@ -615,6 +650,42 @@ final class YTDLPService {
         }
 
         throw AppError.downloadFailed("没有找到 \(track.displayName) 的字幕文件。")
+    }
+
+    private func downloadSubtitleFileDirectly(
+        _ url: URL,
+        track: SubtitleTrack,
+        outputBaseName: String,
+        temporaryDirectory: URL
+    ) async throws -> URL {
+        var request = URLRequest(url: url)
+        request.setValue("VideoExtractorMac/3.0", forHTTPHeaderField: "User-Agent")
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        if let httpResponse = response as? HTTPURLResponse,
+           (200..<300).contains(httpResponse.statusCode) == false {
+            throw AppError.downloadFailed("\(track.displayName) 下载失败：HTTP \(httpResponse.statusCode)")
+        }
+
+        let ext = subtitleExtension(for: track, response: response)
+        let fileURL = temporaryDirectory.appendingPathComponent("\(outputBaseName).\(track.languageCode).\(ext)")
+        try data.write(to: fileURL, options: .atomic)
+        return fileURL
+    }
+
+    private func subtitleExtension(for track: SubtitleTrack, response: URLResponse) -> String {
+        if let ext = track.extensionName?.lowercased(), ["srt", "vtt"].contains(ext) {
+            return ext
+        }
+
+        if let responseURL = response.url {
+            let ext = responseURL.pathExtension.lowercased()
+            if ["srt", "vtt"].contains(ext) {
+                return ext
+            }
+        }
+
+        return "vtt"
     }
 
     private func newestSubtitleFile(in directory: URL, baseName: String) -> URL? {
