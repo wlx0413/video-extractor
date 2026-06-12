@@ -2,6 +2,21 @@
 
 视频提取器是一个多端视频/音频提取工具集合，用于在用户有权保存、学习、备份或获得授权的前提下，分析公开视频链接并下载视频、提取音频或保存图文图片。
 
+## 立即下载
+
+不需要编译源码，直接下载对应安装包：
+
+| 平台 | 推荐下载 | 备用格式 |
+| --- | --- | --- |
+| macOS | [下载 VideoExtractor-macOS-3.0.dmg](https://github.com/wlx0413/video-extractor/releases/download/v3.0.0/VideoExtractor-macOS-3.0.dmg) | [ZIP 压缩包](https://github.com/wlx0413/video-extractor/releases/download/v3.0.0/VideoExtractor-macOS-3.0.zip) |
+| Android | [下载 VideoExtractor-Android-1.0.apk](https://github.com/wlx0413/video-extractor/releases/download/v3.0.0/VideoExtractor-Android-1.0.apk) | - |
+
+- [查看最新版本和发布说明](https://github.com/wlx0413/video-extractor/releases/latest)
+- [查看安装教程](INSTALL.md)
+- [查看全部历史安装包](%E4%B8%8B%E8%BD%BD%E4%B8%80%E8%A7%88.md)
+
+> macOS 安装包目前未经过 Apple 公证。如果系统拦截，请按 `INSTALL.md` 中的步骤从“隐私与安全性”允许打开。Android 首次安装 APK 时需要允许当前浏览器或文件管理器安装未知来源应用。
+
 ## 项目内容
 
 - `VideoExtractorWeb/`：Vite + React 前端和 FastAPI 后端，适合部署到 Netlify + Render。
@@ -49,4 +64,4 @@ cd VideoExtractorAndroid
 
 ## 说明
 
-公开仓库默认不包含签名密钥、构建缓存、安装包、DMG/ZIP 发布包、临时下载文件和运行日志。需要分发安装包时，建议使用 GitHub Releases 单独上传构建产物。
+源码、配置示例和使用文档保存在 Git 仓库中；正式安装包保存在 [GitHub Releases](https://github.com/wlx0413/video-extractor/releases)，避免 GitHub 仓库的单文件大小限制。签名密钥、真实环境变量、构建缓存、临时下载文件和运行日志不会公开上传。
