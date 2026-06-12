@@ -19,6 +19,7 @@ struct FormatSelectionView: View {
                 if let metadata = viewModel.selectedMetadata {
                     metadataView(metadata)
                     controls
+                    subtitleControls(metadata)
                     formatList
                     actionBar
                 } else {
@@ -66,12 +67,96 @@ struct FormatSelectionView: View {
                     if metadata.imageURLs.isEmpty == false {
                         Label("\(metadata.imageURLs.count) 张图片", systemImage: "photo.on.rectangle")
                     }
+                    if metadata.platform == .youtube {
+                        Label("\(metadata.subtitleTracks.count) 种字幕", systemImage: "captions.bubble")
+                    }
                 }
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             }
 
             Spacer()
+        }
+    }
+
+    @ViewBuilder
+    private func subtitleControls(_ metadata: MediaMetadata) -> some View {
+        if metadata.platform == .youtube {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    Label("YouTube 字幕", systemImage: "captions.bubble")
+                        .font(.subheadline.weight(.semibold))
+                    Spacer()
+                    if metadata.subtitleTracks.contains(where: \.isOriginalLanguage) == false,
+                       metadata.subtitleTracks.isEmpty == false {
+                        Text("原始语言未知")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                if metadata.subtitleTracks.isEmpty {
+                    Text("当前视频没有可用字幕。")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                } else {
+                    HStack(alignment: .top, spacing: 18) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Picker("字幕语言", selection: Binding(
+                                get: { viewModel.selectedSubtitleCount },
+                                set: { viewModel.setSubtitleTrackCount($0) }
+                            )) {
+                                Text("无").tag(0)
+                                let maxCount = min(3, metadata.subtitleTracks.count)
+                                if maxCount > 0 {
+                                    ForEach(1...maxCount, id: \.self) { count in
+                                        Text("\(count) 种").tag(count)
+                                    }
+                                }
+                            }
+                            .frame(width: 180)
+
+                            if viewModel.selectedSubtitleCount > 0 {
+                                ForEach(0..<viewModel.selectedSubtitleCount, id: \.self) { index in
+                                    Picker("第 \(index + 1) 行", selection: Binding(
+                                        get: { viewModel.selectedSubtitleTrackID(at: index) },
+                                        set: { viewModel.setSubtitleTrackID($0, at: index) }
+                                    )) {
+                                        ForEach(metadata.subtitleTracks) { track in
+                                            Text(track.displayName).tag(track.id)
+                                        }
+                                    }
+                                    .frame(width: 360)
+                                }
+                            }
+                        }
+
+                        if viewModel.selectedSubtitleCount > 0 {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("字幕格式")
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(.secondary)
+
+                                ForEach(SubtitleOutputFormat.allCases) { format in
+                                    Toggle(format.displayName, isOn: Binding(
+                                        get: { viewModel.selectedSubtitleOutputFormats.contains(format) },
+                                        set: { viewModel.toggleSubtitleOutputFormat(format, enabled: $0) }
+                                    ))
+                                    .toggleStyle(.checkbox)
+                                }
+                            }
+                        }
+                    }
+
+                    if let validationMessage = viewModel.subtitleValidationMessage {
+                        Label(validationMessage, systemImage: "exclamationmark.triangle.fill")
+                            .font(.caption)
+                            .foregroundStyle(.orange)
+                    }
+                }
+            }
+            .padding(12)
+            .background(Color(nsColor: .textBackgroundColor), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
         }
     }
 
@@ -154,6 +239,7 @@ struct FormatSelectionView: View {
                 Label("下载视频", systemImage: "arrow.down.circle.fill")
             }
             .buttonStyle(.borderedProminent)
+            .disabled(viewModel.canDownloadVideo == false)
         }
     }
 }

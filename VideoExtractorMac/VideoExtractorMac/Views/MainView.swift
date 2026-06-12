@@ -94,7 +94,7 @@ struct MainView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Media Extractor")
                     .font(.system(size: 30, weight: .bold, design: .rounded))
-                Text("2.0 内置下载核心。粘贴公开视频链接，分析后选择视频、音频或指定规格下载。")
+                Text("3.0 内置下载核心。粘贴 YouTube 链接可选择单语、双语或三语外挂字幕。")
                     .foregroundStyle(.secondary)
             }
 

@@ -10,9 +10,47 @@ final class MainViewModel: ObservableObject {
     @Published var selectedMode: DownloadMode = AppSettingsStore.load().defaultVideoQuality.downloadMode
     @Published var selectedAudioFormat: AudioOutputFormat = AppSettingsStore.load().defaultAudioFormat
     @Published var selectedFormatID: String?
+    @Published var selectedSubtitleCount: Int = 0
+    @Published var selectedSubtitleTrackIDs: [String] = []
+    @Published var selectedSubtitleOutputFormats: Set<SubtitleOutputFormat> = Set(SubtitleOutputFormat.allCases)
     @Published var tasks: [DownloadTask] = []
     @Published var isAnalyzing: Bool = false
     @Published var errorMessage: String?
+
+    var subtitleValidationMessage: String? {
+        guard selectedSubtitleCount > 0 else {
+            return nil
+        }
+
+        let tracks = selectedMetadata?.subtitleTracks ?? []
+        guard tracks.isEmpty == false else {
+            return "当前视频没有可用字幕。"
+        }
+
+        if selectedSubtitleOutputFormats.isEmpty {
+            return "请选择至少一种字幕格式。"
+        }
+
+        let selectedIDs = Array(selectedSubtitleTrackIDs.prefix(selectedSubtitleCount))
+        if selectedIDs.count < selectedSubtitleCount || selectedIDs.contains(where: { $0.isEmpty }) {
+            return "请选择字幕语言。"
+        }
+
+        if Set(selectedIDs).count != selectedIDs.count {
+            return "字幕语言不能重复。"
+        }
+
+        let availableIDs = Set(tracks.map(\.id))
+        if selectedIDs.contains(where: { availableIDs.contains($0) == false }) {
+            return "请选择有效的字幕语言。"
+        }
+
+        return nil
+    }
+
+    var canDownloadVideo: Bool {
+        subtitleValidationMessage == nil
+    }
 
     private let ytdlpService: YTDLPService
     private let ffmpegService: FFmpegService
@@ -57,6 +95,12 @@ final class MainViewModel: ObservableObject {
         formats = task.metadata?.formats ?? []
         selectedFormatID = task.selectedFormatID
         selectedMode = task.selectedMode
+        selectedSubtitleTrackIDs = task.selectedSubtitleTrackIDs
+        selectedSubtitleCount = task.selectedSubtitleTrackIDs.count
+        selectedSubtitleOutputFormats = task.selectedSubtitleOutputFormats.isEmpty
+            ? Set(SubtitleOutputFormat.allCases)
+            : task.selectedSubtitleOutputFormats
+        normalizeSubtitleTrackIDs()
     }
 
     func downloadSelectedVideo() async {
@@ -139,6 +183,7 @@ final class MainViewModel: ObservableObject {
             formats = metadata.formats.sorted { lhs, rhs in
                 (lhs.height ?? 0, lhs.totalBitrate ?? 0) > (rhs.height ?? 0, rhs.totalBitrate ?? 0)
             }
+            resetSubtitleSelection(for: metadata)
         } catch {
             let appError = AppError.friendly(from: error)
             errorMessage = appError.localizedDescription
@@ -167,6 +212,7 @@ final class MainViewModel: ObservableObject {
         }
 
         do {
+            let subtitleSelection = try selectedSubtitleSelection()
             _ = try await ytdlpService.checkYTDLPAvailable()
             _ = try await ffmpegService.checkFFmpegAvailable()
 
@@ -178,6 +224,8 @@ final class MainViewModel: ObservableObject {
                 task.status = .downloading
                 task.selectedMode = selectedMode
                 task.selectedFormatID = selectedMode == .custom ? selectedFormatID : nil
+                task.selectedSubtitleTrackIDs = Array(selectedSubtitleTrackIDs.prefix(selectedSubtitleCount))
+                task.selectedSubtitleOutputFormats = selectedSubtitleOutputFormats
                 task.errorMessage = nil
                 task.progress = .empty
             }
@@ -186,6 +234,7 @@ final class MainViewModel: ObservableObject {
                 url: url,
                 selectedFormat: selectedMode,
                 customFormatID: selectedMode == .custom ? selectedFormatID : nil,
+                subtitleSelection: subtitleSelection,
                 outputDirectory: outputDirectory,
                 taskID: taskID
             ) { [weak self] progress in
@@ -201,7 +250,7 @@ final class MainViewModel: ObservableObject {
             }
 
             if let completed = tasks.first(where: { $0.id == taskID }) {
-                await writeHistory(for: completed, formatDescription: selectedMode.displayName)
+                await writeHistory(for: completed, formatDescription: videoFormatDescription(subtitleSelection: subtitleSelection))
             }
 
             if settings.shouldOpenFolderWhenFinished {
@@ -350,7 +399,120 @@ final class MainViewModel: ObservableObject {
             selectedMetadata = tasks[index].metadata
             formats = tasks[index].metadata?.formats ?? formats
             selectedFormatID = tasks[index].selectedFormatID
+            selectedSubtitleTrackIDs = tasks[index].selectedSubtitleTrackIDs
+            selectedSubtitleCount = tasks[index].selectedSubtitleTrackIDs.count
+            selectedSubtitleOutputFormats = tasks[index].selectedSubtitleOutputFormats.isEmpty
+                ? selectedSubtitleOutputFormats
+                : tasks[index].selectedSubtitleOutputFormats
         }
+    }
+
+    func setSubtitleTrackCount(_ count: Int) {
+        selectedSubtitleCount = max(0, min(3, count))
+        normalizeSubtitleTrackIDs()
+        syncSubtitleSelectionToSelectedTask()
+    }
+
+    func selectedSubtitleTrackID(at index: Int) -> String {
+        guard selectedSubtitleTrackIDs.indices.contains(index) else {
+            return ""
+        }
+        return selectedSubtitleTrackIDs[index]
+    }
+
+    func setSubtitleTrackID(_ id: String, at index: Int) {
+        guard index >= 0 else {
+            return
+        }
+        while selectedSubtitleTrackIDs.count <= index {
+            selectedSubtitleTrackIDs.append("")
+        }
+        selectedSubtitleTrackIDs[index] = id
+        syncSubtitleSelectionToSelectedTask()
+    }
+
+    func toggleSubtitleOutputFormat(_ format: SubtitleOutputFormat, enabled: Bool) {
+        if enabled {
+            selectedSubtitleOutputFormats.insert(format)
+        } else {
+            selectedSubtitleOutputFormats.remove(format)
+        }
+        syncSubtitleSelectionToSelectedTask()
+    }
+
+    private func resetSubtitleSelection(for metadata: MediaMetadata) {
+        selectedSubtitleCount = 0
+        selectedSubtitleTrackIDs = []
+        selectedSubtitleOutputFormats = Set(SubtitleOutputFormat.allCases)
+
+        guard metadata.subtitleTracks.isEmpty == false else {
+            return
+        }
+
+        normalizeSubtitleTrackIDs()
+        syncSubtitleSelectionToSelectedTask()
+    }
+
+    private func normalizeSubtitleTrackIDs() {
+        let tracks = selectedMetadata?.subtitleTracks ?? []
+        let availableIDs = tracks.map(\.id)
+
+        if selectedSubtitleCount == 0 {
+            selectedSubtitleTrackIDs = []
+            return
+        }
+
+        while selectedSubtitleTrackIDs.count < selectedSubtitleCount {
+            let nextID = availableIDs.first { selectedSubtitleTrackIDs.contains($0) == false } ?? ""
+            selectedSubtitleTrackIDs.append(nextID)
+        }
+
+        selectedSubtitleTrackIDs = Array(selectedSubtitleTrackIDs.prefix(selectedSubtitleCount))
+
+        for index in selectedSubtitleTrackIDs.indices {
+            if availableIDs.contains(selectedSubtitleTrackIDs[index]) == false {
+                selectedSubtitleTrackIDs[index] = availableIDs.first { selectedSubtitleTrackIDs.contains($0) == false } ?? ""
+            }
+        }
+    }
+
+    private func syncSubtitleSelectionToSelectedTask() {
+        guard let selectedTaskID,
+              let index = tasks.firstIndex(where: { $0.id == selectedTaskID }) else {
+            return
+        }
+
+        tasks[index].selectedSubtitleTrackIDs = Array(selectedSubtitleTrackIDs.prefix(selectedSubtitleCount))
+        tasks[index].selectedSubtitleOutputFormats = selectedSubtitleOutputFormats
+        tasks[index].updatedAt = Date()
+    }
+
+    private func selectedSubtitleSelection() throws -> SubtitleSelection? {
+        guard selectedSubtitleCount > 0 else {
+            return nil
+        }
+
+        if let validationMessage = subtitleValidationMessage {
+            throw AppError.downloadFailed(validationMessage)
+        }
+
+        let tracks = selectedMetadata?.subtitleTracks ?? []
+        let byID = Dictionary(uniqueKeysWithValues: tracks.map { ($0.id, $0) })
+        let selectedTracks = Array(selectedSubtitleTrackIDs.prefix(selectedSubtitleCount)).compactMap { byID[$0] }
+        return SubtitleSelection(tracks: selectedTracks, outputFormats: selectedSubtitleOutputFormats)
+    }
+
+    private func videoFormatDescription(subtitleSelection: SubtitleSelection?) -> String {
+        guard let subtitleSelection, subtitleSelection.isEmpty == false else {
+            return selectedMode.displayName
+        }
+
+        let languages = subtitleSelection.tracks.map(\.languageCode).joined(separator: "+")
+        let formats = subtitleSelection.outputFormats
+            .sorted { $0.rawValue < $1.rawValue }
+            .map(\.displayName)
+            .joined(separator: "+")
+        return "\(selectedMode.displayName) · 字幕 \(languages) · \(formats)"
     }
 
     private func writeHistory(for task: DownloadTask, formatDescription: String) async {
