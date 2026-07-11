@@ -13,7 +13,7 @@ const stylesheets = [...html.matchAll(stylesheetPattern)];
 for (const match of stylesheets) {
   const assetPath = join(distRoot, match[1].replace(/^\//, ""));
   const css = (await readFile(assetPath, "utf8")).replaceAll("</style", "<\\/style");
-  html = html.replace(match[0], `<style>${css}</style>`);
+  html = html.replace(match[0], () => `<style>${css}</style>`);
 }
 
 const scriptPattern = /<script([^>]*)src="([^"]+\.js)"([^>]*)><\/script>/g;
@@ -21,7 +21,10 @@ const scripts = [...html.matchAll(scriptPattern)];
 for (const match of scripts) {
   const assetPath = join(distRoot, match[2].replace(/^\//, ""));
   const javascript = (await readFile(assetPath, "utf8")).replaceAll("</script", "<\\/script");
-  html = html.replace(match[0], `<script${match[1]}${match[3]}>${javascript}</script>`);
+  html = html.replace(
+    match[0],
+    () => `<script${match[1]}${match[3]}>${javascript}</script>`,
+  );
 }
 
 if (stylesheets.length === 0 || scripts.length === 0) {
