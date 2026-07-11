@@ -23,6 +23,7 @@ export interface HealthResponse {
   authConfigured: boolean;
   ytdlpAvailable: boolean;
   ffmpegAvailable: boolean;
+  jsRuntimeAvailable?: boolean;
   activeJobs: number;
   message: string;
 }

@@ -5,7 +5,9 @@ import type {
   JobResponse,
 } from "./types";
 
-const DEFAULT_API_BASE = "http://localhost:8765";
+// 网页版必须始终使用公网云端 API。不允许回退到 localhost，
+// 否则其他访问者的浏览器会错误请求他们自己的电脑。
+const DEFAULT_API_BASE = "https://lixon-video-extractor-api.onrender.com";
 
 export const apiBaseURL = (
   import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE
@@ -13,7 +15,6 @@ export const apiBaseURL = (
 
 async function requestJSON<T>(
   path: string,
-  accessCode: string,
   init: RequestInit = {},
 ): Promise<T> {
   const headers = new Headers(init.headers);
@@ -21,14 +22,16 @@ async function requestJSON<T>(
   if (init.body && !headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");
   }
-  if (accessCode) {
-    headers.set("X-Access-Code", accessCode);
-  }
 
-  const response = await fetch(`${apiBaseURL}${path}`, {
-    ...init,
-    headers,
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${apiBaseURL}${path}`, {
+      ...init,
+      headers,
+    });
+  } catch {
+    throw new Error("暂时无法连接云端服务，请稍后重试。");
+  }
 
   if (!response.ok) {
     const message = await response.text();
@@ -48,48 +51,39 @@ async function requestJSON<T>(
 }
 
 export function checkHealth(): Promise<HealthResponse> {
-  return fetch(`${apiBaseURL}/api/health`).then(async (response) => {
-    if (!response.ok) {
-      throw new Error(await response.text());
-    }
-    return response.json() as Promise<HealthResponse>;
-  });
+  return requestJSON<HealthResponse>("/api/health");
 }
 
 export function analyzeURL(
-  accessCode: string,
   url: string,
 ): Promise<AnalyzeResponse> {
-  return requestJSON<AnalyzeResponse>("/api/analyze", accessCode, {
+  return requestJSON<AnalyzeResponse>("/api/analyze", {
     method: "POST",
     body: JSON.stringify({ url }),
   });
 }
 
 export function createJob(
-  accessCode: string,
   payload: CreateJobRequest,
 ): Promise<{ jobID: string }> {
-  return requestJSON<{ jobID: string }>("/api/jobs", accessCode, {
+  return requestJSON<{ jobID: string }>("/api/jobs", {
     method: "POST",
     body: JSON.stringify(payload),
   });
 }
 
 export function getJob(
-  accessCode: string,
   jobID: string,
 ): Promise<JobResponse> {
-  return requestJSON<JobResponse>(`/api/jobs/${jobID}`, accessCode);
+  return requestJSON<JobResponse>(`/api/jobs/${jobID}`);
 }
 
-export function deleteJob(accessCode: string, jobID: string): Promise<void> {
-  return requestJSON<void>(`/api/jobs/${jobID}`, accessCode, {
+export function deleteJob(jobID: string): Promise<void> {
+  return requestJSON<void>(`/api/jobs/${jobID}`, {
     method: "DELETE",
   });
 }
 
-export function downloadURL(jobID: string, accessCode: string): string {
-  const query = new URLSearchParams({ access_code: accessCode });
-  return `${apiBaseURL}/api/jobs/${jobID}/file?${query.toString()}`;
+export function downloadURL(jobID: string): string {
+  return `${apiBaseURL}/api/jobs/${jobID}/file`;
 }

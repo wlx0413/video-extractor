@@ -1,17 +1,21 @@
 services:
   - type: web
-    name: video-extractor-api
+    name: lixon-video-extractor-api
     runtime: docker
     plan: free
     rootDir: VideoExtractorWeb/api
     dockerfilePath: ./Dockerfile
     healthCheckPath: /api/health
     envVars:
-      - key: ACCESS_CODE
-        sync: false
       - key: ALLOWED_ORIGINS
-        sync: false
+        value: "https://lixon.rth1.xyz"
       - key: JOB_TIMEOUT_SECONDS
         value: "1800"
       - key: JOB_TTL_SECONDS
         value: "3600"
+      - key: MAX_MEDIA_SIZE
+        value: "500M"
+      - key: MAX_IMAGE_BYTES
+        value: "26214400"
+      - key: MAX_IMAGE_JOB_BYTES
+        value: "262144000"

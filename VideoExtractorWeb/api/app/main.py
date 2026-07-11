@@ -19,7 +19,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Literal, Optional
 
-from fastapi import FastAPI, Header, HTTPException, Query, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, PlainTextResponse
@@ -30,14 +30,28 @@ from starlette.background import BackgroundTask
 DOWNLOAD_ROOT = Path(os.getenv("DOWNLOAD_ROOT", "/tmp/video-extractor/jobs"))
 JOB_TIMEOUT_SECONDS = int(os.getenv("JOB_TIMEOUT_SECONDS", "1800"))
 JOB_TTL_SECONDS = int(os.getenv("JOB_TTL_SECONDS", "3600"))
-ACCESS_CODE = os.getenv("ACCESS_CODE", "")
+MAX_MEDIA_SIZE = os.getenv("MAX_MEDIA_SIZE", "500M")
+MAX_IMAGE_BYTES = int(os.getenv("MAX_IMAGE_BYTES", str(25 * 1024 * 1024)))
+MAX_IMAGE_JOB_BYTES = int(os.getenv("MAX_IMAGE_JOB_BYTES", str(250 * 1024 * 1024)))
 ALLOWED_ORIGINS = [
     item.strip()
     for item in os.getenv("ALLOWED_ORIGINS", "*").split(",")
     if item.strip()
 ]
 
+SUPPORTED_HOST_SUFFIXES = (
+    "youtube.com",
+    "youtu.be",
+    "bilibili.com",
+    "b23.tv",
+    "xiaohongshu.com",
+    "xhslink.com",
+    "douyin.com",
+    "iesdouyin.com",
+)
+
 TERMINAL_STATUSES = {"completed", "failed", "cancelled"}
+analyze_slots = threading.BoundedSemaphore(value=2)
 
 
 class AnalyzeRequest(BaseModel):
@@ -165,7 +179,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
     allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
-    allow_headers=["Content-Type", "X-Access-Code"],
+    allow_headers=["Content-Type"],
 )
 
 
@@ -194,57 +208,57 @@ def start_cleanup_thread() -> None:
 def health() -> dict[str, Any]:
     ytdlp_available = shutil.which("yt-dlp") is not None
     ffmpeg_available = shutil.which("ffmpeg") is not None
-    ok = bool(ACCESS_CODE and ytdlp_available and ffmpeg_available)
-    if not ACCESS_CODE:
-        message = "ACCESS_CODE 未配置"
-    elif not ytdlp_available:
+    js_runtime_available = shutil.which("deno") is not None
+    ok = bool(ytdlp_available and ffmpeg_available and js_runtime_available)
+    if not ytdlp_available:
         message = "yt-dlp 不可用"
     elif not ffmpeg_available:
         message = "FFmpeg 不可用"
+    elif not js_runtime_available:
+        message = "Deno JavaScript 运行时不可用"
     else:
         message = "服务正常"
 
     return {
         "ok": ok,
-        "authConfigured": bool(ACCESS_CODE),
+        "authConfigured": True,
         "ytdlpAvailable": ytdlp_available,
         "ffmpegAvailable": ffmpeg_available,
+        "jsRuntimeAvailable": js_runtime_available,
         "activeJobs": store.active_count(),
         "message": message,
     }
 
 
 @app.post("/api/analyze")
-def analyze(payload: AnalyzeRequest, x_access_code: Optional[str] = Header(default=None)) -> dict[str, Any]:
-    require_access_code(x_access_code)
+def analyze(payload: AnalyzeRequest) -> dict[str, Any]:
     raw_url = validate_url(payload.url)
-    return public_metadata(analyze_url(raw_url))
+    if not analyze_slots.acquire(blocking=False):
+        raise HTTPException(status_code=429, detail="当前分析请求较多，请稍后重试。")
+    try:
+        return public_metadata(analyze_url(raw_url))
+    finally:
+        analyze_slots.release()
 
 
 @app.post("/api/jobs", status_code=201)
 def create_download_job(
     payload: CreateJobRequest,
-    x_access_code: Optional[str] = Header(default=None),
 ) -> dict[str, str]:
-    require_access_code(x_access_code)
     validate_url(payload.url)
     job = store.create(payload)
     return {"jobID": job.job_id}
 
 
 @app.get("/api/jobs/{job_id}")
-def get_download_job(job_id: str, x_access_code: Optional[str] = Header(default=None)) -> dict[str, Any]:
-    require_access_code(x_access_code)
+def get_download_job(job_id: str) -> dict[str, Any]:
     return store.get(job_id).snapshot()
 
 
 @app.get("/api/jobs/{job_id}/file")
 def get_download_file(
     job_id: str,
-    x_access_code: Optional[str] = Header(default=None),
-    access_code: Optional[str] = Query(default=None),
 ) -> FileResponse:
-    require_access_code(x_access_code or access_code)
     job = store.get(job_id)
     if job.status != "completed" or not job.output_path or not job.output_path.exists():
         raise HTTPException(status_code=404, detail="文件尚未准备好或已过期")
@@ -260,26 +274,23 @@ def get_download_file(
 
 
 @app.delete("/api/jobs/{job_id}")
-def delete_download_job(job_id: str, x_access_code: Optional[str] = Header(default=None)) -> dict[str, bool]:
-    require_access_code(x_access_code)
+def delete_download_job(job_id: str) -> dict[str, bool]:
     store.delete(job_id)
     return {"ok": True}
 
 
-def require_access_code(value: Optional[str]) -> None:
-    # 共享访问码只配置在云端环境变量里，前端代码不会内置密钥。
-    if not ACCESS_CODE:
-        raise HTTPException(status_code=503, detail="服务未配置 ACCESS_CODE")
-    if value != ACCESS_CODE:
-        raise HTTPException(status_code=401, detail="访问码不正确")
-
-
 def validate_url(value: str) -> str:
-    # 只允许公开 HTTP(S) 链接，拒绝 file://、内网协议和其他危险输入。
+    # 公网服务不接受任意主机，避免被利用访问云端内网。
     raw_url = value.strip()
     parsed = urllib.parse.urlparse(raw_url)
-    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+    host = (parsed.hostname or "").lower().rstrip(".")
+    if parsed.scheme not in {"http", "https"} or not host:
         raise HTTPException(status_code=400, detail="只支持 http 或 https 链接")
+    if not any(host == suffix or host.endswith(f".{suffix}") for suffix in SUPPORTED_HOST_SUFFIXES):
+        raise HTTPException(
+            status_code=400,
+            detail="当前网页版支持 YouTube、Bilibili、小红书和抖音公开链接。",
+        )
     return raw_url
 
 
@@ -288,6 +299,8 @@ def analyze_url(raw_url: str) -> dict[str, Any]:
     result = subprocess.run(
         [
             "yt-dlp",
+            "--js-runtimes",
+            "deno",
             "-J",
             "--no-playlist",
             "--no-warnings",
@@ -310,15 +323,16 @@ def analyze_url(raw_url: str) -> dict[str, Any]:
 
 
 def metadata_from_ytdlp(data: dict[str, Any], raw_url: str) -> dict[str, Any]:
-    image_urls = collect_image_urls(data)
+    platform = detect_platform(raw_url)
     thumbnail = data.get("thumbnail")
-    if thumbnail and thumbnail not in image_urls and is_likely_image_url(thumbnail):
+    image_urls = collect_image_urls(data) if platform == "小红书" else []
+    if platform == "小红书" and thumbnail and thumbnail not in image_urls and is_likely_image_url(thumbnail):
         image_urls.insert(0, thumbnail)
 
     return {
         "id": str(first_non_empty(data.get("id"), uuid.uuid4().hex)),
         "sourceURL": data.get("webpage_url") or raw_url,
-        "platform": detect_platform(raw_url),
+        "platform": platform,
         "title": first_non_empty(data.get("title"), f"video_{int(time.time())}"),
         "author": first_non_empty(data.get("uploader"), data.get("channel")),
         "duration": data.get("duration"),
@@ -372,12 +386,16 @@ def download_media(job: DownloadJob, payload: CreateJobRequest) -> None:
     output_template = f"{job.job_id}_%(title).160s.%(ext)s"
     args = [
         "yt-dlp",
+        "--js-runtimes",
+        "deno",
         "--newline",
         "--no-playlist",
         "--windows-filenames",
         "--trim-filenames",
         "180",
         "--no-overwrites",
+        "--max-filesize",
+        MAX_MEDIA_SIZE,
         "--print",
         "after_move:filepath",
         "-P",
@@ -490,6 +508,7 @@ def download_images(job: DownloadJob, metadata: dict[str, Any]) -> None:
     folder = job.job_dir / f"{safe_name(job.title)}_images"
     folder.mkdir(parents=True, exist_ok=True)
     saved = 0
+    total_bytes = 0
     job.status = "downloading"
     started_at = time.time()
 
@@ -501,8 +520,14 @@ def download_images(job: DownloadJob, metadata: dict[str, Any]) -> None:
         try:
             request = urllib.request.Request(raw_url, headers={"User-Agent": "VideoExtractor/1.0"})
             with urllib.request.urlopen(request, timeout=30) as response:
-                data = response.read()
+                data = response.read(MAX_IMAGE_BYTES + 1)
                 content_type = response.headers.get("Content-Type")
+
+            if len(data) > MAX_IMAGE_BYTES:
+                raise RuntimeError("单张图片超过云端限制")
+            total_bytes += len(data)
+            if total_bytes > MAX_IMAGE_JOB_BYTES:
+                raise RuntimeError("本次图片总大小超过云端限制")
 
             ext = image_extension(raw_url, content_type)
             target = folder / f"image_{index:03d}.{ext}"

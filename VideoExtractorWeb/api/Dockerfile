@@ -2,11 +2,16 @@ FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PORT=8765
+    PORT=8765 \
+    DENO_INSTALL=/usr/local
+
+ARG DENO_VERSION=2.8.1
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends ffmpeg ca-certificates curl \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get install -y --no-install-recommends ffmpeg ca-certificates curl unzip \
+    && rm -rf /var/lib/apt/lists/* \
+    && curl -fsSL https://deno.land/install.sh | sh -s v${DENO_VERSION} \
+    && deno --version
 
 WORKDIR /app
 

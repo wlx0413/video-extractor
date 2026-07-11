@@ -13,10 +13,10 @@ Render Free 会在空闲后休眠，冷启动大约需要几十秒到一分钟�
 
 当前默认限制：
 
-- 共享访问码：通过 Render 环境变量 `ACCESS_CODE` 设置。
 - 单任务超时：30 分钟，`JOB_TIMEOUT_SECONDS=1800`。
 - 同时任务数：1 个。
 - 临时文件过期：1 小时，`JOB_TTL_SECONDS=3600`。
+- 单个媒体文件上限：`MAX_MEDIA_SIZE=500M`。
 
 ## 本地开发
 
@@ -27,7 +27,6 @@ cd VideoExtractorWeb/api
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-export ACCESS_CODE=dev-code
 export ALLOWED_ORIGINS=http://localhost:5173
 uvicorn app.main:app --host 0.0.0.0 --port 8765
 ```
@@ -47,7 +46,7 @@ cp .env.example .env
 npm run dev
 ```
 
-默认前端会调用 `http://localhost:8765`。浏览器打开 `http://localhost:5173`，访问码输入 `dev-code`。
+本地开发时 `.env` 会让前端调用 `http://localhost:8765`。浏览器打开 `http://localhost:5173`。线上构建默认使用 Render 云端 API，不会回退到访问者的 `localhost`。
 
 ## 部署到 Render
 
@@ -70,7 +69,6 @@ npm run dev
 7. 设置环境变量：
 
    ```text
-   ACCESS_CODE=你的共享访问码
    ALLOWED_ORIGINS=https://你的-netlify-站点.netlify.app
    JOB_TIMEOUT_SECONDS=1800
    JOB_TTL_SECONDS=3600
@@ -119,7 +117,7 @@ npm run dev
 
 ## API
 
-所有下载相关接口都需要访问码。前端使用 `X-Access-Code` 请求头，文件下载也支持 `?access_code=` 查询参数。
+接口用于公开网页。为保护免费云端资源，后端限制同时下载任务数、文件大小和临时文件生命周期。
 
 - `GET /api/health`
 - `POST /api/analyze`
@@ -132,11 +130,7 @@ npm run dev
 
 ### 打开网页后显示云端异常
 
-检查 `VITE_API_BASE_URL` 是否指向 Render 服务，Render 服务是否已经部署成功，以及 Render 环境变量 `ACCESS_CODE` 是否已设置。
-
-### 分析或下载提示访问码错误
-
-前端输入的访问码必须和 Render 的 `ACCESS_CODE` 完全一致。
+检查 `VITE_API_BASE_URL` 是否指向 Render 服务，Render 服务是否已经部署成功，以及 `ALLOWED_ORIGINS` 是否与前端网址的 origin 完全一致。
 
 ### 下载过程中突然文件不可用
 
