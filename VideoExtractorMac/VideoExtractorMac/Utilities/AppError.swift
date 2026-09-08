@@ -53,12 +53,29 @@ enum AppError: LocalizedError, Equatable {
     static func fromCommandFailure(stderr: String, fallback: String) -> AppError {
         let lowercased = stderr.lowercased()
 
-        if lowercased.contains("login") ||
-            lowercased.contains("private") ||
+        let publicAccessChallenge = [
+            "confirm you're not a bot",
+            "confirm you’re not a bot",
+            "login_required",
+            "fresh cookies",
+            "too many requests",
+            "http error 429",
+            "http error 403",
+            "cloudflare"
+        ]
+        if publicAccessChallenge.contains(where: lowercased.contains) {
+            return .downloadFailed("平台暂时限制了公开访问，应用已自动重试，请稍后再试。")
+        }
+
+        if lowercased.contains("private video") ||
             lowercased.contains("members-only") ||
-            lowercased.contains("premium") ||
-            lowercased.contains("forbidden") ||
-            lowercased.contains("sign in") {
+            lowercased.contains("premium-only") ||
+            lowercased.contains("subscribers-only") ||
+            lowercased.contains("authentication required") ||
+            lowercased.contains("login required") ||
+            lowercased.contains("confirm your age") ||
+            lowercased.contains("age-restricted") ||
+            lowercased.contains("not available in your country") {
             return .loginRequired
         }
 

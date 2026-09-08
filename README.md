@@ -20,7 +20,7 @@
 ## 项目内容
 
 - `VideoExtractorWeb/`：Vite + React 前端和 FastAPI 后端，适合部署到 Netlify + Render。
-- `VideoExtractorMac/`：macOS SwiftUI 桌面应用，并包含 iOS 客户端和本地下载服务。
+- `VideoExtractorMac/`：macOS SwiftUI 桌面应用，并包含 iOS 客户端和本地下载服务。Intel x86_64 版和 Apple Silicon 版共用同一套公开链接解析重试逻辑。
 - `VideoExtractorAndroid/`：Android 原生应用源码。
 - `视频提取器使用说明书.md`：macOS、Android、iOS 客户端使用说明。
 
@@ -30,6 +30,12 @@
 - 不用于绕过 DRM、付费墙、会员、登录、私密内容或地区限制。
 - 不读取、上传或窃取浏览器 cookies、登录信息、密码或 token。
 - 平台规则可能变化，解析能力属于尽力支持。
+
+### YouTube 公开链接提示“需要登录/会员”
+
+macOS 版遇到 YouTube 云端或网络出口的临时风控时，会自动依次尝试默认公开客户端、`web_embedded` 和 `web_safari` 公开客户端，不读取浏览器 cookies，也不绕过会员、登录、年龄、地区或私密内容限制。真正受权限保护的链接仍会停止并提示原因。
+
+Intel x86_64 安装包需要使用包含最新源码的重新构建版本；仅重新下载旧的 3.1 安装包不会获得这次修复。维护者构建 macOS 版本时请在 Xcode 中选择对应架构后重新 Archive，并替换 GitHub Release 附件。
 
 ## 快速开始
 

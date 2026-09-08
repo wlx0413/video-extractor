@@ -25,6 +25,7 @@
 - 历史记录保存到本地 JSON。
 - 日志保存到 `Logs/app.log`，文件操作保存到 `Logs/file_operations.log`。
 - 清理历史和日志轮转不会删除旧文件，会移动到 `要删除的/`。
+- YouTube 公开链接遇到临时机器人/出口风控时，会自动尝试默认、`web_embedded`、`web_safari` 三种公开解析策略；Intel x86_64 和 Apple Silicon 使用同一套逻辑。
 
 ## 2.0 内置工具版
 
@@ -70,6 +71,8 @@ VideoExtractorMac/
 
 2. 选择 `VideoExtractorMac` scheme。
 3. 运行到 My Mac。
+
+构建 Intel 版本时，在 Xcode 的 Build Settings 中将 `Architectures` 设为 `x86_64`，然后重新 Archive。发布给用户的 `.app`、DMG 或 ZIP 必须来自这次重新构建；仓库源码更新不会自动修改已经上传的旧安装包。
 
 如果不想使用 Xcode 图形界面，也可以构建：
 

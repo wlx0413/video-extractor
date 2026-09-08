@@ -1,6 +1,23 @@
 import Foundation
 
 final class YTDLPService {
+    private enum ExtractionProfile {
+        case `default`
+        case youtubeEmbedded
+        case youtubeSafari
+
+        var arguments: [String] {
+            switch self {
+            case .default:
+                return []
+            case .youtubeEmbedded:
+                return ["--extractor-args", "youtube:player_client=web_embedded"]
+            case .youtubeSafari:
+                return ["--extractor-args", "youtube:player_client=web_safari"]
+            }
+        }
+    }
+
     private struct MetadataDTO: Decodable {
         var id: String?
         var webpageURL: String?
@@ -102,17 +119,37 @@ final class YTDLPService {
 
     func fetchMetadata(url: URL) async throws -> MediaMetadata {
         let executableURL = try ytdlpExecutableURL()
-        let result = try await runner.run(
-            executableURL: executableURL,
-            arguments: ["-J", "--no-playlist", url.absoluteString]
-        )
+        var lastFailure = "当前链接无法解析。"
 
-        guard result.succeeded else {
-            throw AppError.fromCommandFailure(stderr: result.stderr, fallback: "当前链接无法解析。")
+        for profile in extractionProfiles(for: url) {
+            let result = try await runner.run(
+                executableURL: executableURL,
+                arguments: profile.arguments + ["-J", "--no-playlist", url.absoluteString]
+            )
+
+            guard result.succeeded else {
+                let output = result.stderr.isEmpty ? result.stdout : result.stderr
+                lastFailure = output
+                if Self.shouldStopAfterFailure(output) {
+                    throw AppError.fromCommandFailure(stderr: output, fallback: "当前链接无法解析。")
+                }
+                continue
+            }
+
+            do {
+                return try decodeMetadata(result.stdout, for: url)
+            } catch {
+                lastFailure = error.localizedDescription
+                continue
+            }
         }
 
+        throw AppError.fromCommandFailure(stderr: lastFailure, fallback: "当前链接无法解析。")
+    }
+
+    private func decodeMetadata(_ stdout: String, for url: URL) throws -> MediaMetadata {
         do {
-            let data = Data(result.stdout.utf8)
+            let data = Data(stdout.utf8)
             let dto = try JSONDecoder().decode(MetadataDTO.self, from: data)
             let platform = URLDetector.detectPlatform(for: url)
             let formats = (dto.formats ?? []).compactMap(Self.mapFormat)
@@ -138,9 +175,50 @@ final class YTDLPService {
                 subtitleTracks: subtitleTracks
             )
         } catch {
-            await AppLogger.shared.log("解析 yt-dlp JSON 失败：\(error.localizedDescription)", level: .error)
+            awaitLogMetadataError(error)
             throw AppError.downloadFailed("当前链接返回的信息无法解析。")
         }
+    }
+
+    private func awaitLogMetadataError(_ error: Error) {
+        Task {
+            await AppLogger.shared.log("解析 yt-dlp JSON 失败：\(error.localizedDescription)", level: .error)
+        }
+    }
+
+    private func extractionProfiles(for url: URL) -> [ExtractionProfile] {
+        guard URLDetector.detectPlatform(for: url) == .youtube else {
+            return [.default]
+        }
+        return [.default, .youtubeEmbedded, .youtubeSafari]
+    }
+
+    private static func shouldStopAfterFailure(_ message: String) -> Bool {
+        let lowercased = message.lowercased()
+        let retryableTokens = [
+            "confirm you're not a bot",
+            "confirm you’re not a bot",
+            "login_required",
+            "fresh cookies",
+            "too many requests",
+            "http error 429",
+            "http error 403",
+            "forbidden",
+            "cloudflare"
+        ]
+        if retryableTokens.contains(where: lowercased.contains) {
+            return false
+        }
+
+        return lowercased.contains("private video") ||
+            lowercased.contains("members-only") ||
+            lowercased.contains("premium-only") ||
+            lowercased.contains("subscribers-only") ||
+            lowercased.contains("confirm your age") ||
+            lowercased.contains("age-restricted") ||
+            lowercased.contains("not available in your country") ||
+            lowercased.contains("unsupported url") ||
+            lowercased.contains("no suitable extractor")
     }
 
     func fetchFormats(url: URL) async throws -> [MediaFormat] {
@@ -173,33 +251,52 @@ final class YTDLPService {
             mediaOutputDirectory = outputDirectory
         }
 
-        var arguments = baseArguments(outputDirectory: mediaOutputDirectory, outputBaseName: baseName)
-        arguments += [
-            "-f", selectedFormat.ytDLPFormatSelector(customFormatID: customFormatID),
-            "--merge-output-format", "mp4"
-        ]
+        var lastFailure = "视频下载失败。"
+        var result: CommandResult?
 
-        if let ffmpegLocation = try? ffmpegService.ffmpegExecutableURL().deletingLastPathComponent().path {
-            arguments += ["--ffmpeg-location", ffmpegLocation]
-        }
+        for profile in extractionProfiles(for: url) {
+            var arguments = profile.arguments + baseArguments(
+                outputDirectory: mediaOutputDirectory,
+                outputBaseName: baseName
+            )
+            arguments += [
+                "-f", selectedFormat.ytDLPFormatSelector(customFormatID: customFormatID),
+                "--merge-output-format", "mp4"
+            ]
 
-        arguments.append(url.absoluteString)
-
-        let result = try await runner.run(
-            id: taskID,
-            executableURL: try ytdlpExecutableURL(),
-            arguments: arguments
-        ) { output in
-            if let progress = Self.parseProgress(from: output.text) {
-                progressHandler(progress)
+            if let ffmpegLocation = try? ffmpegService.ffmpegExecutableURL().deletingLastPathComponent().path {
+                arguments += ["--ffmpeg-location", ffmpegLocation]
             }
-        }
 
-        guard result.succeeded else {
-            if result.exitCode == 15 {
+            arguments.append(url.absoluteString)
+
+            let attempt = try await runner.run(
+                id: taskID,
+                executableURL: try ytdlpExecutableURL(),
+                arguments: arguments
+            ) { output in
+                if let progress = Self.parseProgress(from: output.text) {
+                    progressHandler(progress)
+                }
+            }
+
+            if attempt.succeeded {
+                result = attempt
+                break
+            }
+
+            if attempt.exitCode == 15 {
                 throw AppError.cancelled
             }
-            throw AppError.fromCommandFailure(stderr: result.stderr, fallback: "视频下载失败。")
+
+            lastFailure = attempt.stderr.isEmpty ? attempt.stdout : attempt.stderr
+            if Self.shouldStopAfterFailure(lastFailure) {
+                break
+            }
+        }
+
+        guard let result else {
+            throw AppError.fromCommandFailure(stderr: lastFailure, fallback: "视频下载失败。")
         }
 
         guard let videoURL = finalOutputURL(from: result, outputDirectory: mediaOutputDirectory) else {
