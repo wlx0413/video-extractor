@@ -17,6 +17,17 @@
 
 > macOS 安装包目前未经过 Apple 公证。如果系统拦截，请按 `INSTALL.md` 中的步骤从“隐私与安全性”允许打开。Android 首次安装 APK 时需要允许当前浏览器或文件管理器安装未知来源应用。
 
+## Intel x86_64 最新修复版
+
+更新时间：**2026-09-08**
+
+本次已修复 Intel x86_64 macOS 版对部分 YouTube 公开视频误报“需要登录/会员”并下载失败的问题。修复后的源码已同步到 GitHub：
+
+- [下载/查看最新修复源码（codex/cloud-web-deploy 分支）](https://github.com/wlx0413/video-extractor/tree/codex/cloud-web-deploy)
+- [查看本次修复提交](https://github.com/wlx0413/video-extractor/commit/7057e07)
+
+修复后的 Intel `.app`、DMG 和 ZIP 安装包正在重新构建，**旧版 3.1 安装包暂不包含本次修复**，请不要把旧下载链接当作修复版使用。完成 Xcode Archive 后，会在这里补充新的安装包下载链接。
+
 ## 项目内容
 
 - `VideoExtractorWeb/`：Vite + React 前端和 FastAPI 后端，适合部署到 Netlify + Render。
